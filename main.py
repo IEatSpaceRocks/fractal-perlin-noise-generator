@@ -1,5 +1,7 @@
 import math, pygame
 import userinput as usrin
+import matplotlib.pyplot as plt
+import numpy as np
 from functions import generate_sequence, assign_vectors, calc_dot_products
 
 matrix_side_len = usrin.grid_side_len + 1
@@ -20,10 +22,11 @@ if __name__ == "__main__":
         print()
         print(sequence)
 
-    data = calc_dot_products(octave, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 4)
+    data = calc_dot_products(octave, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 3)
 
 
 
+    # Draw image from above in pygame
     new_data = []
     max, min = 0, 0
     for row in data:
@@ -45,7 +48,7 @@ if __name__ == "__main__":
 
     x = len(data[0])
     print(x)
-
+    
     pygame.init()
     screen = pygame.display.set_mode((x, x))
     pygame.display.set_caption("Perlin Noise") 
@@ -65,3 +68,39 @@ if __name__ == "__main__":
         pygame.display.flip()
         pygame.time.Clock().tick(20)
     
+    pygame.quit()
+    
+    
+    
+    # Show slices in matplotlib
+    data1 = calc_dot_products(octave, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 1)
+    data2 = calc_dot_products(octave, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 2)
+    data3 = calc_dot_products(octave, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 3)
+    data4 = calc_dot_products(octave, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 4)
+
+    xpoints = []
+    for i in range(len(data[0])):
+        xpoints.append(i + 1)
+
+    current = 0
+
+    plt.ion()
+    fig, ax = plt.subplots(figsize=(10, 20))
+    
+    line1, = ax.plot(400, -60)
+    line2, = ax.plot(0, 60)
+    line3, = ax.plot(0, 0)
+    line4, = ax.plot(0, 0)
+    
+    while True:
+        line1.set_data(xpoints, data1[current])
+        line2.set_data(xpoints, data2[current])
+        line3.set_data(xpoints, data3[current])
+        line4.set_data(xpoints, data4[current])
+        ax.set_title(f"Row {current + 1} of {len(data)}")
+        plt.pause(0.05)
+
+
+        current +=1
+        if current >= len(data):
+            current = 0
