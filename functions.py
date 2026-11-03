@@ -132,6 +132,27 @@ def calc_dot_products(vector_values, grid_side_length, chunk_side_length, psbl_v
 
 
 
+
+def lerp_horizontally(matrix_left, matrix_right, chunk_side_length, grid_side_length):
+    new_matrix = []
+    
+    for i in range(grid_side_length * chunk_side_length):
+        row_l, row_r = matrix_left[i], matrix_right[i]
+        new_row = []
+        
+        for j in range(grid_side_length):
+            
+            for k in range(chunk_side_length):
+                r, l = row_r[j * chunk_side_length + k], row_l[j * chunk_side_length + k]
+                new_value = (r - l) * (k / (chunk_side_length - 1)) + l
+                new_row.append(new_value)
+        
+        new_matrix.append(new_row)
+    
+    return new_matrix
+        
+
+
 if __name__ == "__main__":
     
     print("~" * 50)
