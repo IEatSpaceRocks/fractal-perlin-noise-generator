@@ -28,6 +28,7 @@ if __name__ == "__main__":
     data3 = calc_dot_products(octave, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 3)
     data4 = calc_dot_products(octave, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 4)
     lerp1 = lerp_horizontally(data1, data2, usrin.chunk_side_len, usrin.grid_side_len)
+    
 
 
     # Draw image from above in pygame
@@ -48,10 +49,7 @@ if __name__ == "__main__":
             
         new_data.append(new)
         
-    print(min, max)
-
-    x = len(data1[0])
-    print(x)
+    x = len(data1)
     
     pygame.init()
     screen = pygame.display.set_mode((x, x))
@@ -99,7 +97,7 @@ if __name__ == "__main__":
 #        line3.set_data(xpoints, data3[current])
 #        line4.set_data(xpoints, data4[current])
         ax.set_title(f"Row {current + 1} of {len(data1)}")
-        plt.pause(0.05)
+        plt.pause(1)
 
 
         current +=1

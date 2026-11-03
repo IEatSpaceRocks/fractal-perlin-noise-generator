@@ -92,12 +92,12 @@ def get_value(sign, variable, chunk_side_length, variant):
             if variant == 1 or variant == 3:
                 return variable % chunk_side_length + 1
             else:
-                return chunk_side_length - variable % chunk_side_length
+                return variable % chunk_side_length - 40
         case "b":                                                   # relative y coordinate of pixel
             if variant == 1 or variant == 2:
                 return variable  % chunk_side_length + 1
             else:
-                return chunk_side_length - variable % chunk_side_length
+                return variable % chunk_side_length - 40
         case "x":                                                   # index for the vector's place in a row
             if variant == 1 or variant == 3:
                 return int(variable / chunk_side_length)
@@ -123,8 +123,8 @@ def calc_dot_products(vector_values, grid_side_length, chunk_side_length, psbl_v
         for x in range(pixel_count):
             a = get_value("a", x, chunk_side_length, variant)
             val_x, val_y = get_value("x", x, chunk_side_length, variant), get_value("y", y, chunk_side_length, variant)
-            degree = vector_values[val_y][val_x] * (360/psbl_vect_orients)
-            row.append(math.sin(degree) * a + math.cos(degree) * b)
+            radian = math.radians(vector_values[val_y][val_x] * (360/psbl_vect_orients))
+            row.append(math.sin(radian) * a + math.cos(radian) * b)
             
         pixel_values.append(row)
         
@@ -144,7 +144,8 @@ def lerp_horizontally(matrix_left, matrix_right, chunk_side_length, grid_side_le
             
             for k in range(chunk_side_length):
                 r, l = row_r[j * chunk_side_length + k], row_l[j * chunk_side_length + k]
-                new_value = (r - l) * (k / (chunk_side_length - 1)) + l
+                x = k / (chunk_side_length)
+                new_value = (r - l) * (6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3) + l
                 new_row.append(new_value)
         
         new_matrix.append(new_row)
