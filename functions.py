@@ -90,14 +90,14 @@ def get_value(sign, variable, chunk_side_length, variant):
     match sign:
         case "a":                                                   # relative x coordinate of pixel
             if variant == 1 or variant == 3:
-                return variable % chunk_side_length + 1
+                return variable % chunk_side_length + 0.5
             else:
-                return variable % chunk_side_length - 40
+                return variable % chunk_side_length - chunk_side_length + 0.5
         case "b":                                                   # relative y coordinate of pixel
             if variant == 1 or variant == 2:
-                return variable  % chunk_side_length + 1
+                return variable % chunk_side_length + 0.5
             else:
-                return variable % chunk_side_length - 40
+                return variable % chunk_side_length - chunk_side_length + 0.5
         case "x":                                                   # index for the vector's place in a row
             if variant == 1 or variant == 3:
                 return int(variable / chunk_side_length)
@@ -144,7 +144,7 @@ def lerp_horizontally(matrix_left, matrix_right, chunk_side_length, grid_side_le
             
             for k in range(chunk_side_length):
                 r, l = row_r[j * chunk_side_length + k], row_l[j * chunk_side_length + k]
-                x = k / (chunk_side_length)
+                x = (k + 0.5) / (chunk_side_length)
                 new_value = (r - l) * (6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3) + l
                 new_row.append(new_value)
         
@@ -152,6 +152,29 @@ def lerp_horizontally(matrix_left, matrix_right, chunk_side_length, grid_side_le
     
     return new_matrix
         
+
+
+def lerp_vertically(matrix_up, matrix_down, chunk_side_length, grid_side_length):
+    pixels = grid_side_length * chunk_side_length
+    new_matrix = [[] for _ in range(pixels)]
+    
+    for i in range(grid_side_length * chunk_side_length):
+        col_u, col_d = [], []
+        
+        for s in range(grid_side_length * chunk_side_length):
+            col_u.append(matrix_up[s][i])
+            col_d.append(matrix_down[s][i])
+            
+        for j in range(grid_side_length):
+            
+            for k in range(chunk_side_length):
+                u, d = col_u[j * chunk_side_length + k], col_d[j * chunk_side_length + k]
+                x = (k + 0.5) / (chunk_side_length)
+                new_value = (d - u) * (6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3) + u
+                new_matrix[j * chunk_side_length + k].append(new_value)
+
+    return new_matrix
+
 
 
 if __name__ == "__main__":
