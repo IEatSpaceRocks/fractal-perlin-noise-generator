@@ -78,7 +78,6 @@ def generate_sequence(matrix_side_length, octave_count, lacunarity, seed, max_va
             octave_values.append(random.randint(1, max_value))
             
         random.seed(new_seed)
-        print(octave_values[0])
         sequence.extend(octave_values)
         
     return sequence
@@ -112,7 +111,10 @@ def get_value(sign, variable, chunk_side_length, variant):
 
 
 # Calculate the dot product values for one vector variant, for the current octave
-def calc_dot_products(vector_values, grid_side_length, chunk_side_length, psbl_vect_orients, variant):
+def calc_dot_products(vector_values, grid_side_length, chunk_side_length, psbl_vect_orients, variant, density):
+    grid_side_length *= density
+    chunk_side_length /= density
+    grid_side_length, chunk_side_length = int(grid_side_length), int(chunk_side_length)
     pixel_count = grid_side_length * chunk_side_length
     pixel_values = []
     
@@ -133,7 +135,10 @@ def calc_dot_products(vector_values, grid_side_length, chunk_side_length, psbl_v
 
 
 
-def lerp_horizontally(matrix_left, matrix_right, chunk_side_length, grid_side_length):
+def lerp_horizontally(matrix_left, matrix_right, chunk_side_length, grid_side_length, density):
+    grid_side_length *= density
+    chunk_side_length /= density
+    grid_side_length, chunk_side_length = int(grid_side_length), int(chunk_side_length)
     new_matrix = []
     
     for i in range(grid_side_length * chunk_side_length):
@@ -154,14 +159,17 @@ def lerp_horizontally(matrix_left, matrix_right, chunk_side_length, grid_side_le
         
 
 
-def lerp_vertically(matrix_up, matrix_down, chunk_side_length, grid_side_length):
+def lerp_vertically(matrix_up, matrix_down, chunk_side_length, grid_side_length, density):
+    grid_side_length *= density
+    chunk_side_length /= density
+    grid_side_length, chunk_side_length = int(grid_side_length), int(chunk_side_length)
     pixels = grid_side_length * chunk_side_length
     new_matrix = [[] for _ in range(pixels)]
     
-    for i in range(grid_side_length * chunk_side_length):
+    for i in range(pixels):
         col_u, col_d = [], []
         
-        for s in range(grid_side_length * chunk_side_length):
+        for s in range(pixels):
             col_u.append(matrix_up[s][i])
             col_d.append(matrix_down[s][i])
             

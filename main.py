@@ -12,27 +12,35 @@ matrix_side_len = usrin.grid_side_len + 1
 if __name__ == "__main__":
     
     sequence = generate_sequence(matrix_side_len, usrin.octave_count, usrin.lacunarity, usrin.seed_val, usrin.psbl_vect_orients)
-    print(sequence)
+
+        
+    for octave in range(usrin.octave_count):
+        octave_values, sequence = assign_vectors(int(matrix_side_len * usrin.lacunarity ** octave), sequence)
+        density = usrin.lacunarity ** octave
+        
+        data1 = calc_dot_products(octave_values, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 1, density)
+        data2 = calc_dot_products(octave_values, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 2, density)
+        data3 = calc_dot_products(octave_values, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 3, density)
+        data4 = calc_dot_products(octave_values, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 4, density)
+
+        lerp1 = lerp_horizontally(data1, data2, usrin.chunk_side_len, usrin.grid_side_len, density)
+        lerp2 = lerp_horizontally(data3, data4, usrin.chunk_side_len, usrin.grid_side_len, density)
+        
+        lerp3 = lerp_vertically(lerp1, lerp2, usrin.chunk_side_len, usrin.grid_side_len, density)
+        
+        arr = np.array(lerp3)
+        
+        if octave == 0:
+            data = arr
+        else:
+            data += arr * usrin.persistence ** octave
     
-    for i in range(usrin.octave_count):
-        octave, sequence = assign_vectors(int(matrix_side_len * usrin.lacunarity ** i), sequence)
-        print()
-        for row in octave:
-            print(row)
-        print()
-        print(sequence)
-
-
-    data1 = calc_dot_products(octave, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 1)
-    data2 = calc_dot_products(octave, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 2)
-    data3 = calc_dot_products(octave, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 3)
-    data4 = calc_dot_products(octave, usrin.grid_side_len, usrin.chunk_side_len, usrin.psbl_vect_orients, 4)
-    lerp1 = lerp_horizontally(data1, data2, usrin.chunk_side_len, usrin.grid_side_len)
-    lerp2 = lerp_horizontally(data3, data4, usrin.chunk_side_len, usrin.grid_side_len)
-    lerp3 = lerp_vertically(lerp1, lerp2, usrin.chunk_side_len, usrin.grid_side_len)
+    
+    
+    
     
     max_val, min_val = 0, 0
-    for row in lerp3:
+    for row in data:
         if max(row) > max_val:
             max_val = max(row)
         if min(row) < min_val:
@@ -47,7 +55,7 @@ if __name__ == "__main__":
 
     # Draw image from above in pygame
     new_data = []
-    for row in lerp3:
+    for row in data:
         new = []
         for item in row:
             new_item = item / scale + 0.5
@@ -68,8 +76,8 @@ if __name__ == "__main__":
     while running:
         
         for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
+            if event.type == pygame.QUIT:
+                running = False
                     
         for i in range(x):
             for j in range(x):
@@ -109,7 +117,7 @@ if __name__ == "__main__":
 #        line3.set_data(xpoints, data3[current])
 #        line4.set_data(xpoints, data4[current])
         ax.set_title(f"Row {current + 1} of {len(data1)}")
-        plt.pause(1)
+        plt.pause(0.05)
 
 
         current +=1
